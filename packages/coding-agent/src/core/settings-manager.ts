@@ -75,6 +75,10 @@ export interface WarningSettings {
 	anthropicExtraUsage?: boolean; // default: true
 }
 
+export interface SubagentSettings {
+	defaultModel?: string; // "provider/model" selector; defaults to the parent model
+}
+
 export type TransportSetting = Transport;
 
 /**
@@ -136,6 +140,7 @@ export interface Settings {
 	recentModels?: string[]; // "provider/id" keys, most-recently-used first
 	defaultThinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 	defaultServiceTier?: ServiceTier;
+	subagents?: SubagentSettings;
 	rlmMaxDepth?: number; // default for new sessions; unset falls through to RLM_MAX_DEPTH, then 2
 	idleEvictionMinutes?: number | "off"; // global daemon policy; default: 90
 	transport?: TransportSetting; // default: "auto"
@@ -706,6 +711,10 @@ export class SettingsManager {
 
 	getDefaultModel(): string | undefined {
 		return this.settings.defaultModel;
+	}
+
+	getSubagentDefaultModel(): string | undefined {
+		return this.settings.subagents?.defaultModel;
 	}
 
 	setDefaultProvider(provider: string): void {

@@ -1,0 +1,2 @@
+- Fixed extension loading when coding-agent dependencies import the pi-ai MCP subpath.
+- Added `subagents.defaultModel` to configure a different default model for RLM children.

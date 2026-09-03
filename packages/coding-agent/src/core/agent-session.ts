@@ -10410,7 +10410,8 @@ export class AgentSession {
 			throw new Error(`Unsupported rlm.run kwargs: ${unsupportedKwargs.sort().join(", ")}`);
 		}
 		const requestedSessionName = normalizeRequestedRlmSubagentSessionName(rawName);
-		const requestedModel = normalizeRequestedRlmSubagentModel(rawModel);
+		const configuredModel = rawModel === undefined ? this.settingsManager.getSubagentDefaultModel() : rawModel;
+		const requestedModel = normalizeRequestedRlmSubagentModel(configuredModel);
 		const requestedThinkingLevel = normalizeRequestedRlmSubagentThinkingLevel(rawThinking);
 		if (requestedSessionName) assertDirectAgentMessageTarget(requestedSessionName);
 		if (this._rlmDepth >= this._rlmMaxDepth) {
