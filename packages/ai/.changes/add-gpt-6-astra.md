@@ -1,0 +1,1 @@
+- Added `gpt-6-astra` to the OpenAI Codex catalog (input 10 / output 50 / cacheRead 1 / cacheWrite 12.5, 272k context) and regenerated the catalog from live provider sources, which also picked up `openai/gpt-6-astra` on OpenRouter and Vercel AI Gateway plus the `-pro` and `-fast` variants.

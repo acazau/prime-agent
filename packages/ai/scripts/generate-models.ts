@@ -2112,6 +2112,20 @@ async function generateModels() {
 			contextWindow: 128000,
 			maxTokens: CODEX_MAX_TOKENS,
 		},
+		{
+			id: "gpt-6-astra",
+			name: "GPT-6 Astra",
+			api: "openai-codex-responses",
+			provider: "openai-codex",
+			baseUrl: CODEX_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			// Base API rates; prompts above 272k input are priced higher upstream, but the
+			// Codex surface is capped at CODEX_CONTEXT so the base rates apply.
+			cost: { input: 10, output: 50, cacheRead: 1, cacheWrite: 12.5 },
+			contextWindow: CODEX_CONTEXT,
+			maxTokens: CODEX_MAX_TOKENS,
+		},
 	];
 	allModels.push(...codexModels);
 
