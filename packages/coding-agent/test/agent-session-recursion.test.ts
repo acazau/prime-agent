@@ -376,6 +376,52 @@ describe("AgentSession rlm recursion", () => {
 		expect(child.rlmDepth).toBe(3);
 	});
 
+	function settingsWith(settings: Record<string, unknown>): SettingsManager {
+		const json = JSON.stringify(settings);
+		return SettingsManager.fromStorage({
+			withLock(scope, update) {
+				update(scope === "global" ? json : undefined);
+			},
+		});
+	}
+
+	async function spawnChildThinkingLevel(
+		root: AgentSession,
+		kwargs: Record<string, unknown> = {},
+	): Promise<string | undefined> {
+		const result = await root.runRlmChild("inspect the API", kwargs);
+		if (!result.session_dir) throw new Error("Missing child session directory");
+		return root.getRlmChildSession(basename(result.session_dir))?.thinkingLevel;
+	}
+
+	it("resolves subagent thinking level by per-call, configured default, then parent", async () => {
+		// Parent's runtime level, not settings.defaultThinkingLevel, is the last fallback.
+		const inheriting = createSession({ settingsManager: settingsWith({ defaultThinkingLevel: "high" }) });
+		inheriting.setThinkingLevel("medium");
+		expect(await spawnChildThinkingLevel(inheriting)).toBe("medium");
+
+		const configured = createSession({
+			settingsManager: settingsWith({ subagents: { defaultThinkingLevel: "low" } }),
+		});
+		configured.setThinkingLevel("medium");
+		expect(await spawnChildThinkingLevel(configured)).toBe("low");
+
+		// A per-call argument outranks the configured default.
+		expect(await spawnChildThinkingLevel(configured, { thinking: "high" })).toBe("high");
+	});
+
+	it("clamps a configured subagent level to the child model but throws on a per-call one", async () => {
+		const root = createSession({
+			settingsManager: settingsWith({ subagents: { defaultThinkingLevel: "xhigh" } }),
+		});
+		// claude-sonnet-4-5 tops out at "high": the configured default clamps rather than
+		// breaking every spawn, while an explicit per-call level is still a hard error.
+		expect(await spawnChildThinkingLevel(root)).toBe("high");
+		await expect(root.runRlmChild("inspect the API", { thinking: "xhigh" })).rejects.toThrow(
+			/thinking level "xhigh" is not supported/,
+		);
+	});
+
 	it("lets the orchestrator choose a unique subagent session name", async () => {
 		const root = createSession();
 		const result = await root.runRlmChild("inspect the API", { name: "  api-reviewer  " });

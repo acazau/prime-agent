@@ -9605,8 +9605,14 @@ export class AgentSession {
 			spawnCode: options.spawnCode,
 			sessionDir: options.sessionDir,
 			model: options.model,
+			// Configured subagent default clamps to the child model rather than throwing:
+			// one unsupported model in a rotation must not break every spawn.
 			thinkingLevel:
-				options.thinkingLevel ?? (clampThinkingLevel(options.model, this.thinkingLevel) as ThinkingLevel),
+				options.thinkingLevel ??
+				(clampThinkingLevel(
+					options.model,
+					this.settingsManager.getSubagentDefaultThinkingLevel() ?? this.thinkingLevel,
+				) as ThinkingLevel),
 			serviceTier:
 				this.serviceTier === "priority" && !supportsFastMode(options.model) ? "default" : this.serviceTier,
 			scopedModels: [...this._scopedModels],

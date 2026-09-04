@@ -77,6 +77,7 @@ export interface WarningSettings {
 
 export interface SubagentSettings {
 	defaultModel?: string; // "provider/model" selector; defaults to the parent model
+	defaultThinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max"; // defaults to the parent's current level
 }
 
 export type TransportSetting = Transport;
@@ -715,6 +716,10 @@ export class SettingsManager {
 
 	getSubagentDefaultModel(): string | undefined {
 		return this.settings.subagents?.defaultModel;
+	}
+
+	getSubagentDefaultThinkingLevel(): "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max" | undefined {
+		return this.settings.subagents?.defaultThinkingLevel;
 	}
 
 	setDefaultProvider(provider: string): void {
