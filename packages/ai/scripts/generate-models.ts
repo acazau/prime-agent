@@ -2112,18 +2112,6 @@ async function generateModels() {
 			maxTokens: CODEX_MAX_TOKENS,
 		},
 		{
-			id: "gpt-6-astra",
-			name: "GPT-6 Astra",
-			api: "openai-codex-responses",
-			provider: "openai-codex",
-			baseUrl: CODEX_BASE_URL,
-			reasoning: true,
-			input: ["text", "image"],
-			cost: { input: 10, output: 50, cacheRead: 1, cacheWrite: 12.5 },
-			contextWindow: CODEX_CONTEXT,
-			maxTokens: CODEX_MAX_TOKENS,
-		},
-		{
 			id: "gpt-5.4-mini",
 			name: "GPT-5.4 Mini",
 			api: "openai-codex-responses",
